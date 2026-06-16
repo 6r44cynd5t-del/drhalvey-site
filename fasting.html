@@ -57,7 +57,7 @@
     <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin:8px 0 4px">
       <div>
         <label for="surgdt" style="font-weight:600;font-size:14px;display:block;margin-bottom:6px">Date and time of your surgery</label>
-        <input type="datetime-local" id="surgdt" style="font-size:16px;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit">
+        <input type="datetime-local" id="surgdt" step="900" style="font-size:16px;padding:11px 13px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit">
       </div>
     </div>
     <div id="fastout" style="display:none">
@@ -125,13 +125,20 @@
     var mm=(m<10?'0':'')+m;
     return h12+':'+mm+' '+ap+' on '+dy[d.getDay()]+' '+d.getDate()+' '+mo[d.getMonth()];
   }
-  el.addEventListener('change',function(){
+  function compute(){
     if(!el.value){document.getElementById('fastout').style.display='none';return;}
     var s=new Date(el.value);
     document.getElementById('f-food').textContent=fmt(new Date(s.getTime()-6*3600000));
     document.getElementById('f-fluid').textContent=fmt(new Date(s.getTime()-2*3600000));
     document.getElementById('fastout').style.display='block';
-  });
+  }
+  /* default to the next day at 7:00 am so the picker shows a sensible time, not the current pm time */
+  function pad(n){return (n<10?'0':'')+n;}
+  var d=new Date(); d.setDate(d.getDate()+1); d.setHours(7,0,0,0);
+  el.value=d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T07:00';
+  el.addEventListener('change',compute);
+  el.addEventListener('input',compute);
+  compute();
 })();
 </script>
 </body>
